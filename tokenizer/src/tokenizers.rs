@@ -75,16 +75,40 @@ impl Tokenizer for BpeTokenizer {
     }
 
     fn tokenize(&self, text: &str, vocab: &Vocabulary) -> Vec<TokenId> {
-        todo!()
+        let mut text: Vec<String> = text.chars().map(|ch| ch.to_string()).collect();
+        
+        let mut i = 0;
+        while i < text.len()-1 {
+            let current = text[i].clone() + &text[i+1];
+
+            if vocab.contains_token(&current) {
+                text.remove(i+1);
+                text.remove(i);
+                text.insert(i, current)
+            } else {
+                i += 1;
+            }
+        }
+
+        let unk_token = if let Some(id) = vocab.get_token_id("[UNK]") { id } else { 0 };
+        text.iter().map(|ch| {
+            if let Some(id) = vocab.get_token_id(&ch.to_string()) {
+                id
+            } else {
+                unk_token
+            }
+        }).collect()
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::vocab::VocabularyBuilder;
+
     use super::*;
 
     #[test]
-    fn bpe_fill_vocab() {
+    fn bpe_fill_vocab1() {
         let tokenizer = BpeTokenizer::new();
         let mut vocab = Vocabulary::new();
 
@@ -95,5 +119,42 @@ mod tests {
         assert!(vocab.contains_token("d"));
         assert!(vocab.contains_token("e"));
         assert!(!vocab.contains_token("f"));
+    }
+
+    #[test]
+    fn bpe_fill_vocab2() {
+        let tokenizer = BpeTokenizer::new();
+        let mut vocab = Vocabulary::new();
+
+        tokenizer.fill_vocab("ababcabab", &mut vocab);
+        assert!(vocab.contains_token("a"));
+        assert!(vocab.contains_token("b"));
+        assert!(vocab.contains_token("c"));
+        assert!(vocab.contains_token("ab"));
+        assert!(vocab.contains_token("abab"));
+        assert!(!vocab.contains_token("abc"));
+        assert!(!vocab.contains_token("ababc"));
+        assert!(!vocab.contains_token("ababc"));
+    }
+
+    #[test]
+    fn bpe_tokenize1() {
+        let tokenizer = BpeTokenizer::new();
+        let vocab = VocabularyBuilder::new()
+            .add_token("[UNK]".to_string(), 0)
+            .add_token("a".to_string(), 1)
+            .add_token("b".to_string(), 2)
+            .add_token("ab".to_string(), 3)
+            .add_token("bc".to_string(), 4)
+            .build();
+
+        let tokens = tokenizer.tokenize("abab", &vocab);
+        assert_eq!(tokens, vec![3, 3]);
+
+        let tokens = tokenizer.tokenize("!abab", &vocab);
+        assert_eq!(tokens, vec![0, 3, 3]);
+
+        let tokens = tokenizer.tokenize("abc", &vocab);
+        assert_eq!(tokens, vec![3, 0]);
     }
 }
