@@ -1,20 +1,22 @@
-pub mod token;
-pub mod bpe;
+pub mod vocab;
+pub mod tokenizers;
 
-use token::*;
-use bpe::*;
+use vocab::*;
+use tokenizers::*;
 
 fn main() {
-    let mut table: TokenTable = TokenTable::new();
-    let text = std::fs::read_to_string("./input.txt").expect("Can't read file 'input.txt'");
+    let mut vocab: Vocabulary = VocabularyBuilder::new()
+        .add_token("[UNK]".to_string(), 0)
+        .build();
 
-    let content = string_to_primary_tokens(&text, &mut table);
-    fill_token_table(&content, &mut table);
+    // let corpus = std::fs::read_to_string("./input.txt").expect("Can't read file 'input.txt'");
+    let corpus = "Sed alias eos dolorem inventore. Tenetur consequatur repellendus nostrum unde minima laudantium incidunt perspiciatis. Ut voluptas occaecati eaque quo placeat occaecati provident. Repellendus eveniet magni sit adipisci. Repudiandae ipsa ea atque reiciendis quibusdam ut porro.";
 
-    let mut tokens: Vec<_> = table.decode.keys().collect();
-    tokens.sort();
+    let tokenizer = tokenizers::BpeTokenizer::new();
+    tokenizer.fill_vocab(&corpus, &mut vocab);
 
-    for token in tokens {
-        println!("{} = \"{}\"", token, decode_token(*token, &table));
-    }
+    println!("{}", vocab);
+
+    // let tokens = tokenizer.tokenize("Hellow world!", &vocab);
+    // println!("{:?}", tokens);
 }
