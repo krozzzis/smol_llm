@@ -15,3 +15,12 @@ All subprojects will made from scratch and only in Rust)).
 - [ ] Word embedding, word2vec
 - [ ] Interactive word similarity viewer in HTML/WASM
 - [ ] Text generator
+
+## Usage
+
+### Tokenizer
+
+CLI tool:
+```bash
+$ cargo run --bin tokenizer_cli
+```
