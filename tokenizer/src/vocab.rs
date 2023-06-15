@@ -67,6 +67,33 @@ impl Vocabulary {
     pub fn len(&self) -> usize {
         self.decode.len()
     }
+
+    pub fn serialize(&self) -> String {
+        let mut result = String::new();
+
+        for (id, token) in self.decode.iter() {
+            let token = token.replace("\n", "\\n");
+            result.push_str(&format!("{id}:{token}\n"));
+        }
+
+        result
+    }
+
+    pub fn from_str(content: &str) -> Self {
+        let mut result = Self::new();
+
+        content.lines().for_each(|x| {
+            let parts = x.split_once(":");
+            if let Some((a, b)) = parts {
+                let b = b.replace("\\n", "\n");
+                result.add_token(b.to_string(), a.parse::<TokenId>().unwrap());
+            } else {
+                println!("Error: {}", x);
+            }
+        });
+
+        result
+    }
 }
 
 impl std::fmt::Display for Vocabulary {
