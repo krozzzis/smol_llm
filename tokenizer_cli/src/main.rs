@@ -18,7 +18,7 @@ fn fill_subcommand(vocab_path: PathBuf, corpus_path: PathBuf) -> Result<(), std:
     let corpus = std::fs::read_to_string(corpus_path.clone())?;
 
     let mut tokenizer = tokenizers::BpeTokenizer::new();
-    tokenizer.max_size = 2000;
+    tokenizer.max_size = 50000;
     tokenizer.fill_vocab(&corpus, &mut vocab);
     std::fs::write(vocab_path, vocab.serialize())?;
 

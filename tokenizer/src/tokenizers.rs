@@ -35,6 +35,7 @@ impl Tokenizer for BpeTokenizer {
                 vocab.get_token_id(&ch.to_string()).unwrap()
             }
         }).collect();
+        println!("BASE");
 
         let mut freqs: HashMap<(TokenId, TokenId), u32> = HashMap::new();
         let len = self.max_size - vocab.len();
