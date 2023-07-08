@@ -1,26 +1,32 @@
-# The Road to LLM 
+# Smol Language Model
 
-In this repository I track progress of my NLP skills.
+It's like Large Language Model, but smol.
 
-I don't use any dependencies in this projects. 
-All subprojects will made from scratch and only in Rust)).
+I don't use any dependencies in this projects(except for Rand). 
+All subprojects will made from scratch and only in Rust.
 
 ## Roadmap
 - [x] BPE Tokenizer
 - [ ] Interactive tokenizer and vocab viewer in HTML/WASM
-- [ ] Simple language model(e.g. using Markov chain)
-- [ ] Telegram bot and HTML app for simple language model
+- [x] Simple language model(e.g. using Markov chain)
+- [ ] Telegram bot and web app for models
 - [ ] Simple neural network implementation
 - [ ] Neural network training/inference framework
 - [ ] Word embedding, word2vec
 - [ ] Interactive word similarity viewer in HTML/WASM
-- [ ] Text generator
+- [ ] Generative model for text
 
 ## Usage
 
 ### Tokenizer
 
-CLI tool:
 ```bash
 $ cargo run --bin tokenizer_cli
+```
+
+### Markov chain
+
+Interactive mode:
+```bash
+$ cargo run --bin markov_chain -- content/vocab.vcb content/corpus.txt
 ```
